@@ -1,0 +1,69 @@
+//Approach1 -> Recurssion
+//T.c -> o(2^e)
+//s.c->o(n)
+
+#include<bits/stdc++.h>
+int fun(int ind,vector<int> &nums){
+    if(ind==0)nums[ind];
+    if(ind<0)return 0;
+    
+    int pick = nums[ind] + fun(ind-2,nums);
+    int NotPick = 0 + fun(ind-1,nums);
+    
+    return max(pick,NotPick);
+}
+
+int maximumNonAdjacentSum(vector<int> &nums){
+    int n = nums.size();
+    return fun(n-1,nums);
+    }
+    
+//Approach2 -> DP (Memoization)
+//T.c -> o(n)
+//s.c->o(n)+o(n)
+
+
+#include<bits/stdc++.h>
+int fun(int ind,vector<int> &nums,vector<int> &dp){
+    if(ind==0)nums[ind];
+    if(ind<0)return 0;
+    
+    if(dp[ind] != -1)return dp[ind];
+    
+    int pick = nums[ind] + fun(ind-2,nums,dp);
+    int NotPick = 0 + fun(ind-1,nums,dp);
+    
+    return dp[ind]=max(pick,NotPick);
+}
+
+int maximumNonAdjacentSum(vector<int> &nums){
+    int n = nums.size();
+    vector<int>dp(n+1,-1);
+    return fun(n-1,nums,dp);
+    }
+    
+//Approach2 -> DP (Tabulation)
+//T.c -> o(n)
+//s.c->o(n)
+
+#include<bits/stdc++.h>
+int fun(int n, vector<int>& nums){
+    int prev1 = nums[0];
+    int prev2  = 0;
+    
+    for(int i=1 ;i<n; i++){
+        int pick = nums[i];
+        if(i>1){
+        pick = pick + prev2;
+        }
+        int nonPick = 0 + prev1;   
+        int curr = max(pick, nonPick);
+        prev2 = prev1;
+        prev1  = curr;
+    }
+    return prev1;
+}
+int maximumNonAdjacentSum(vector<int> &nums){
+    int n = nums.size();
+    return fun(n,nums);
+    }
