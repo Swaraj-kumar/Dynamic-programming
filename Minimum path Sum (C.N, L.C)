@@ -1,0 +1,129 @@
+https://leetcode.com/problems/minimum-path-sum/submissions/
+
+// Approach 1: Recurssive(Gives TLE)
+// T.C-> exponential
+// S.c-> stack space
+
+/*class Solution {
+public:
+    
+    int fun(int i,int j,vector<vector<int>>& grid){
+        if(i == 0 && j == 0)return grid[0][0];
+        if(i < 0 || j < 0)return 1e9;
+        
+        int  up = grid[i][j] + fun(i-1,j,grid);
+        int left = grid[i][j] + fun(i,j-1,grid);
+        
+        return min(up,left);
+    
+    }
+    
+    int minPathSum(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+    return fun(n-1,m-1,grid);
+    }
+};*/
+
+
+// Approach 2: Memoization
+// T.C-> o(n*m)
+// S.c-> O((M-1)+(N-1)) + O(N*M) 
+    
+/*class Solution {
+public:
+    
+    int fun(int i,int j,vector<vector<int>>& grid,vector<vector<int>>& dp){
+        if(i == 0 && j == 0)return grid[0][0];
+        if(i < 0 || j < 0)return 1e9;
+        
+        if(dp[i][j] != -1)return dp[i][j];
+        
+        int  up = grid[i][j] + fun(i-1,j,grid,dp);
+        int left = grid[i][j] + fun(i,j-1,grid,dp);
+        
+        return dp[i][j] = min(up,left);
+    
+    }
+    
+    int minPathSum(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+    vector<vector<int>> dp(n,vector<int>(m,-1));
+    return fun(n-1,m-1,grid,dp);
+    }
+};*/
+
+// Approach 3: Tabulation
+// T.C-> o(n*m)
+// S.c-> o(n*m)
+
+/*class Solution {
+public:
+    
+    int minPathSum(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+    vector<vector<int>> dp(n,vector<int>(m,0));
+    
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            if(i == 0 && j==0){
+                dp[i][j] = grid[0][0];
+            }
+            else{
+                int up=0,left=0;
+                
+                if(i > 0)up = up + dp[i-1][j] + grid[i][j];
+                else up = up + 1e9;
+                if(j > 0)left = left + dp[i][j-1] + grid[i][j];
+                else left = left + 1e9;
+                
+                dp[i][j] = min(up,left);
+            }
+        }
+    }
+        return dp[n-1][m-1];
+    
+    }
+};*/
+
+
+// Approach 4: Space Optimization
+// T.C-> o(m*n)
+// S.c-> o(n)
+    
+    
+/*class Solution {
+public:
+    
+    int minPathSum(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+
+    vector<int>prev(m,0);
+    for(int i=0;i<n;i++){
+        vector<int>curr(m,0);
+        for(int j=0;j<m;j++){
+            if(i == 0 && j==0){
+                curr[j] = grid[0][0];
+                continue;
+            }
+            else{
+                int up=0,left=0;
+                //Requiring previous row j column
+                if(i > 0)up = up + prev[j] + grid[i][j];
+                else up = up + 1e9;
+                //Requiring current row j-1 column
+                if(j > 0)left = left + curr[j-1] + grid[i][j];
+                else left = left + 1e9;
+                
+                curr[j] = min(up,left);
+            }
+        }
+        prev = curr;
+    }
+        return prev[m-1];
+    
+    }
+};*/
