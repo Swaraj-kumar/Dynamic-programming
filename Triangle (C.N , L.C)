@@ -1,0 +1,119 @@
+https://leetcode.com/problems/triangle/submissions/
+
+Approach 1 -> Recurssion
+T.c -> Exponential
+s.c -> Stack space
+
+class Solution {
+public:
+    int fun(int i,int j,vector<vector<int>> &grid){
+        int n = grid.size();
+        if(i == n-1)return grid[n-1][j];
+        int down = grid[i][j] + fun(i+1,j,grid);
+        int diagonal = grid[i][j] + fun(i+1,j+1,grid);
+        
+        return min(down,diagonal);
+    }
+    
+    int minimumTotal(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+    
+    return fun(0,0,grid);
+    }
+};
+
+Approach 2 -> Memoization
+T.c -> O(N*N)
+s.c -> O(N) + O(N*N)
+
+class Solution {
+public:
+     int fun(int i,int j,vector<vector<int>> &grid,vector<vector<int>> &dp){
+         int n =grid.size();
+         if(i==n-1)return grid[n-1][j];
+         if(dp[i][j]  != -1)return dp[i][j];
+         int down = grid[i][j] + fun(i+1,j,grid,dp);
+         int diagonal = grid[i][j] + fun(i+1,j+1,grid,dp);
+         
+         return dp[i][j] = min(down,diagonal);
+     }
+    
+    
+    int minimumTotal(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+    vector<vector<int>>dp(n,vector<int>(n,-1));
+    return fun(0,0,grid,dp);
+    }
+};
+
+Approach 3 -> Tabulation
+T.c -> O(N*N)
+s.c -> O(N*N)
+
+   //Remember tabulation is always exact opposite of recurssion
+   //Base case
+    /*
+    1
+    2 3
+    3 6 7
+    8 9 6 10 ------> n-1 row, when we reach here we have 4 different col so any of them could be my ans, so run for loop
+                     ans store the value of that col in dp array like this..
+                     for(int j=0;j<n;i++)dp[n-1][j] = grid[n-1][j]; -> here col is changing and row remains constant
+                     thus we can now start our loop from n-2 as we have worked for n-1 like this..
+                     for(int i=n-2;i>=0;i--){---> we are decrementing here becoz in recurssion we were incrementing
+                     for(int j=i;j>=0;j--){--> j=i becoz when i=0,j=0, similarly i=1,j=0 1, i=2,j=0 1 2 and so on..
+                     }}*/   
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+    vector<vector<int>>dp(n,vector<int>(n,-1));
+    //Base case
+    for(int j=0;j<n;j++)dp[n-1][j] = grid[n-1][j];
+    //perfroming rest
+    for(int i=n-2;i>=0;i--){
+        for(int j=i;j>=0;j--){
+          int down = 0, diagonal = 0;
+          down = down + grid[i][j] + dp[i+1][j];
+          diagonal = diagonal + grid[i][j] + dp[i+1][j+1];
+                
+          dp[i][j] = min(down,diagonal);
+            
+        }
+    }
+        return dp[0][0];
+    }
+};
+
+Approach 4 -> Space optimization
+T.c -> O(N*N)
+s.c -> O(N) + O(N*N)
+
+// By taking two arrays we can simply optimze it as here we are required only the prev row to compute next one
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& grid) {
+    int n = grid.size();
+    int m = grid[0].size();
+    vector<int>prev(n,0);
+    //Base case
+    for(int j=0;j<n;j++)prev[j] = grid[n-1][j];
+    //perfroming rest
+    for(int i=n-2;i>=0;i--){
+    vector<int>curr(n,0);
+        for(int j=i;j>=0;j--){
+          int down = 0, diagonal = 0;
+          down = down + grid[i][j] + prev[j];
+          diagonal = diagonal + grid[i][j] + prev[j+1];
+                
+          curr[j] = min(down,diagonal);
+            
+        }
+        prev = curr;
+    }
+        return prev[0];
+    }
+};
