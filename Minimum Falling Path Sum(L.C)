@@ -1,0 +1,48 @@
+https://leetcode.com/problems/minimum-falling-path-sum/
+
+Approach 1: Memoization
+T.c -> O(N*N)
+S.c -> O(N) + O(N*M)
+
+class Solution {
+public:
+    
+    int fun(int i, int j, int m, vector<vector<int>> &matrix, vector<vector<int> > &dp){
+    
+    // Base Conditions 
+    //out of bound will only happen for left diagonal and right diagonal only then return 1e9
+    if(j<0 || j>=m)
+        return 1e9;
+    //if destination is reached, destination is reaching the 1st row then return whatever val is picked 
+    if(i==0)
+        return matrix[0][j];
+    
+    if(dp[i][j]!=-1) return dp[i][j];
+    
+    int up = matrix[i][j] + fun(i-1,j,m,matrix,dp);
+    int leftDiagonal = matrix[i][j] + fun(i-1,j-1,m,matrix,dp);
+    int rightDiagonal = matrix[i][j] + fun(i-1,j+1,m,matrix,dp);
+    
+    return dp[i][j]= min(up,min(leftDiagonal,rightDiagonal));
+    
+}
+    
+    int minFallingPathSum(vector<vector<int>>& mat) {
+      int n = mat.size();
+      int m = mat[0].size();
+      vector<vector<int>> dp(n,vector<int>(m,-1));
+        
+      int mini = 1e9;
+      //running loop till col size because starting index could be any grid but row will be constant
+      for(int j=0;j<m;j++){
+          int ans = fun(n-1,j,m,mat,dp);
+          mini = min(mini,ans);
+      }
+        return mini;
+    }
+};
+
+
+Approach 2: Tabulation
+T.c -> O(N*N)
+S.c -> O(N*M)
