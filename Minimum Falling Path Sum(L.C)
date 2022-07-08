@@ -92,7 +92,9 @@ public:
     for(int j=0;j<m;j++){
     int up = 0, left = 0, right = 0;
     up = up + mat[i][j] + dp[i-1][j];
-      
+        
+    // out of bound case will only arise in case of left and right diagonal case
+    //so put a check for j-1 and j+1 
     if(j-1 >= 0)left = left + mat[i][j] + dp[i-1][j-1];
     else left = left + 1e9;
             
@@ -136,7 +138,10 @@ public:
     for(int j=0;j<m;j++){
     int up = 0, left = 0, right = 0;
     up = up + mat[i][j] + prev[j];
-      
+    
+    // out of bound case will only arise in case of left and right diagonal case
+    //so put a check for j-1 and j+1 
+    
     if(j-1 >= 0)left = left + mat[i][j] + prev[j-1];
     else left = left + 1e9;
             
