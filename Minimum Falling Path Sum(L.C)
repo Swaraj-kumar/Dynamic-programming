@@ -1,48 +1,160 @@
 https://leetcode.com/problems/minimum-falling-path-sum/
 
-Approach 1: Memoization
-T.c -> O(N*N)
-S.c -> O(N) + O(N*M)
+Approach 1: Recurssion
+T.c -> O(3^n)-> exponential
+S.c -> O(N) -> stack space
 
 class Solution {
 public:
+    int fun(int i,int j,vector<vector<int>> &mat){
+        //boundary check willl only happen on the left and rigth diagonal
+        if(j < 0 ||  j >= mat[0].size())return 1e9;
+        //if we have reached the destination
+        if(i == 0)return mat[0][j];
+        //traversing all the three directions
+        int left = mat[i][j] + fun(i-1,j-1,mat);
+        int up = mat[i][j] + fun(i-1,j,mat);
+        int right = mat[i][j] + fun(i-1,j+1,mat);
+        //return minimum of all the three
+        return min(up,min(left,right));
+    }
     
-    int fun(int i, int j, int m, vector<vector<int>> &matrix, vector<vector<int> > &dp){
-    
-    // Base Conditions 
-    //out of bound will only happen for left diagonal and right diagonal only then return 1e9
-    if(j<0 || j>=m)
-        return 1e9;
-    //if destination is reached, destination is reaching the 1st row then return whatever val is picked 
-    if(i==0)
-        return matrix[0][j];
-    
-    if(dp[i][j]!=-1) return dp[i][j];
-    
-    int up = matrix[i][j] + fun(i-1,j,m,matrix,dp);
-    int leftDiagonal = matrix[i][j] + fun(i-1,j-1,m,matrix,dp);
-    int rightDiagonal = matrix[i][j] + fun(i-1,j+1,m,matrix,dp);
-    
-    return dp[i][j]= min(up,min(leftDiagonal,rightDiagonal));
-    
-}
     
     int minFallingPathSum(vector<vector<int>>& mat) {
-      int n = mat.size();
-      int m = mat[0].size();
-      vector<vector<int>> dp(n,vector<int>(m,-1));
+    int n = mat.size();
+    int m = mat[0].size();
         
-      int mini = 1e9;
-      //running loop till col size because starting index could be any grid but row will be constant
-      for(int j=0;j<m;j++){
-          int ans = fun(n-1,j,m,mat,dp);
-          mini = min(mini,ans);
-      }
-        return mini;
+    int mini = 1e9;
+    //make a function call from last row till first
+    for(int j=0;j<m;j++){
+        mini = min(mini,fun(n-1,j,mat));
+    }
+    return mini;
     }
 };
 
 
-Approach 2: Tabulation
+
+Approach 2: Memoization
+T.c -> O(N*N)
+S.c ->  O(N) + O(N*M)
+
+
+
+class Solution {
+public:
+    int fun(int i,int j,vector<vector<int>> &mat, vector<vector<int>> &dp){
+        if(j < 0 ||  j >= mat[0].size())return 1e9;
+        
+        if(i == 0)return mat[0][j];
+        
+        if(dp[i][j] != -1)return dp[i][j];
+        
+        int left = mat[i][j] + fun(i-1,j-1,mat,dp);
+        int up = mat[i][j] + fun(i-1,j,mat,dp);
+        int right = mat[i][j] + fun(i-1,j+1,mat,dp);
+        
+        return dp[i][j] =  min(up,min(left,right));        
+    }
+    
+    int minFallingPathSum(vector<vector<int>>& mat) {
+    int n = mat.size();
+    int m = mat[0].size();
+    
+    vector<vector<int>> dp(n,vector<int>(m,-1));
+    int mini = 1e9;
+        
+    for(int j=0;j<m;j++){
+        mini = min(mini,fun(n-1,j,mat,dp));
+    }
+    return mini;
+    }
+};
+
+
+Approach 3: Tabulation
 T.c -> O(N*N)
 S.c -> O(N*M)
+
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& mat) {
+     int n = mat.size();
+     int m = mat[0].size();
+        
+     vector<vector<int>>dp(n,vector<int>(m,0));
+        
+    //initializing the first row -> base condition
+     for(int j=0;j<m;j++)dp[0][j] = mat[0][j];
+        
+    // performing for others starting from 1 as 0 is done
+    for(int i=1;i<n;i++){
+    for(int j=0;j<m;j++){
+    int up = 0, left = 0, right = 0;
+    up = up + mat[i][j] + dp[i-1][j];
+      
+    if(j-1 >= 0)left = left + mat[i][j] + dp[i-1][j-1];
+    else left = left + 1e9;
+            
+    if(j+1 < m)right = right + mat[i][j] + dp[i-1][j+1];
+    else right = right + 1e9;
+
+    dp[i][j] = min(up,min(left,right));
+    }
+}
+     
+    int mini = 1e9;
+    
+    for(int j=0; j<m;j++){
+        mini = min(mini,dp[n-1][j]);
+    }
+    
+    return mini;
+    }
+};
+
+
+Approach 4: Space optimization
+T.c -> O(N*N)
+S.c -> O(M)
+
+
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& mat) {
+     int n = mat.size();
+     int m = mat[0].size();
+        
+     vector<int>prev(m,0);
+        
+    //initializing the first row -> base condition
+     for(int j=0;j<m;j++)prev[j] = mat[0][j];
+        
+    // performing for others starting from 1 as 0 is done
+    for(int i=1;i<n;i++){
+    vector<int>curr(m,0);
+    for(int j=0;j<m;j++){
+    int up = 0, left = 0, right = 0;
+    up = up + mat[i][j] + prev[j];
+      
+    if(j-1 >= 0)left = left + mat[i][j] + prev[j-1];
+    else left = left + 1e9;
+            
+    if(j+1 < m)right = right + mat[i][j] + prev[j+1];
+    else right = right + 1e9;
+
+    curr[j] = min(up,min(left,right));
+    }
+     prev = curr ;
+}
+     
+    int mini = 1e9;
+    
+    for(int j=0; j<m;j++){
+        mini = min(mini,prev[j]);
+    }
+    
+    return mini;
+    }
+};
+
