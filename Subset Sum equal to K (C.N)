@@ -1,0 +1,22 @@
+https://www.codingninjas.com/codestudio/problems/subset-sum-equal-to-k_1550954?leftPanelTab=1
+
+bool fun(int ind,int target,vector<int> &arr){
+    if(target == 0)return true;
+    if(ind == 0)return (arr[0] == target);
+    
+    bool notTake = fun(ind-1,target,arr);
+    bool Take = false;
+    if(arr[ind] <= target)Take = fun(ind-1,target-arr[ind],arr);
+    
+    return Take || notTake;
+   }
+
+bool subsetSumToK(int n, int k, vector<int> &arr) {
+    // Write your code here.
+    return fun(n-1,k,arr);
+}
+
+
+Approach 2 : Tabuluation
+T.c -> 
+S.c ->
