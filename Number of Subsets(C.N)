@@ -1,0 +1,50 @@
+Approach 1: Recurssion
+T.c ---> o(2^n)
+s.c ---> o(n)
+
+int fun(int ind,int sum,vector<int> &num){
+    if(sum == 0)return 1;
+    if(ind == 0)return num[0] == sum;
+    
+    int notTake = fun(ind-1,sum,num);
+    int take = 0;
+    if(num[ind] <= sum)take = fun(ind-1,sum-num[ind],num);
+    
+    return take + notTake;
+ }
+
+
+int findWays(vector<int> &num, int tar)
+{
+    // Write your code here.
+    int n = num.size();
+    fun(n-1,tar,num);
+}
+
+
+Approach 2: Tabulation
+T.c ---> o(n*sum)
+s.c ---> o(n*sum) + o(n)
+
+int fun(int ind, int target, vector<int>& arr, vector<vector<int>> &dp){
+    if(target==0)return 1;
+  
+    if(ind == 0)return arr[0] == target;
+    
+    if(dp[ind][target]!=-1)return dp[ind][target];
+        
+    int notTaken = fun(ind-1,target,arr,dp);
+    int taken = 0;
+    
+    if(arr[ind]<=target)taken = fun(ind-1,target-arr[ind],arr,dp);
+        
+    return dp[ind][target]= notTaken + taken;
+}
+
+int findWays(vector<int> &num, int tar){
+    int n = num.size();
+    vector<vector<int>> dp(n,vector<int>(tar+1,-1));
+    return fun(n-1,tar,num,dp);
+}
+
+
