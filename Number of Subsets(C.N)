@@ -25,6 +25,13 @@ int findWays(vector<int> &num, int tar)
 Approach 2: Memoization
 T.c ---> o(n*sum)
 s.c ---> o(n*sum) + o(n)
+//slight modification will be their in base cases.
+/*   if(ind == 0){
+        if(target == 0 && arr[0]==0)return 2;
+        if(target == 0 || arr[0] == target)return 1;
+        return 0;
+    }
+*/
 
 int fun(int ind, int target, vector<int>& arr, vector<vector<int>> &dp){
     if(target==0)return 1;
