@@ -22,7 +22,7 @@ int findWays(vector<int> &num, int tar)
 }
 
 
-Approach 2: Tabulation
+Approach 2: Memoization
 T.c ---> o(n*sum)
 s.c ---> o(n*sum) + o(n)
 
@@ -47,4 +47,45 @@ int findWays(vector<int> &num, int tar){
     return fun(n-1,tar,num,dp);
 }
 
+//Tabulation
+T.c ---> o(n*tar)
+s.c ---> o(n*tar) + o(n)
+#include <bits/stdc++.h> 
+int findWays(vector<int> &num, int k){
+   int n = num.size();
+   vector<vector<int>> dp(n,vector<int>(k+1,0)); 
+    for(int i=0; i<n; i++)dp[i][0] = 1;
+    
+    if(num[0]<=k)dp[0][num[0]] = 1;
+    
+    for(int ind = 1; ind<n; ind++){
+        for(int target=1; target<=k; target++){
+            int notTaken = dp[ind-1][target];
+            int taken = 0;
+            if(num[ind]<=target)taken = dp[ind-1][target-num[ind]];
+            dp[ind][target]= notTaken + taken;
+        }
+    }
+    return dp[n-1][k];
+}
 
+//Spaace optimization
+
+int findWays(vector<int> &num, int k){
+   int n = num.size();
+   vector<int>prev(k+1),curr(k+1);
+   prev[0] = 1,curr[0] = 1;
+    
+    if(num[0]<=k)prev[num[0]] = 1;
+    
+    for(int ind = 1; ind<n; ind++){
+        for(int target= 1; target<=k; target++){
+            int notTaken = prev[target];
+            int taken = 0;
+            if(num[ind]<=target)taken = prev[target-num[ind]];
+            curr[target]= notTaken + taken;
+        }
+        prev = curr;
+    }
+    return prev[k];
+}
