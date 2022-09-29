@@ -1,0 +1,50 @@
+APPROACH 1: RECURSSINON
+
+#include <bits/stdc++.h> 
+int fun(int ind,int W,vector<int> &wt,vector<int> &val){
+    if(ind == 0){
+        if(wt[0] <= W)return val[0];
+        return 0;
+    }
+    int notTake = 0 + fun(ind-1,W,wt,val);
+    int take = INT_MIN;
+    if(wt[ind] <= W)take = fun(ind-1,W-wt[ind],wt,val);
+    
+    return max(take,notTake);
+}
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
+{
+	return fun(n-1,maxWeight,weight,value);
+}
+
+
+APPROACH 2: TABULATION
+T.c -> o(n*w)
+s.c-> o(n*w) + o(n)
+
+#include <bits/stdc++.h> 
+
+int fun(vector<int>& wt, vector<int>& val, int ind, int W, vector<vector<int>>& dp){
+
+    if(ind == 0){
+        if(wt[0] <= W) return val[0];
+        else return 0;
+    }
+    
+    if(dp[ind][W]!=-1)
+        return dp[ind][W];
+        
+    int notTaken = 0 + fun(wt,val,ind-1,W,dp);
+    
+    int taken = INT_MIN;
+    if(wt[ind] <= W)
+        taken = val[ind] + fun(wt,val,ind-1,W-wt[ind],dp);
+        
+    return dp[ind][W] = max(notTaken,taken);
+}
+
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
+{
+	vector<vector<int>> dp(n,vector<int>(maxWeight+1,-1));
+    return fun(weight,value,n-1,maxWeight,dp);
+}
