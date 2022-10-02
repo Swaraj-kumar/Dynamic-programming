@@ -1,26 +1,27 @@
 APPROACH 1: RECURSSINON
+T.c -> EXPONENTIAL(Because of recurssive calls)
+s.c-> Auxuliary stack space 
 
 #include <bits/stdc++.h> 
-int fun(int ind,int W,vector<int> &wt,vector<int> &val){
+int fun(vector<int>& wt, vector<int>& val, int ind, int W){
     if(ind == 0){
-        if(wt[0] <= W)return val[0];
-        return 0;
+        if(wt[0] <= W) return val[0];
+        else return 0;
     }
-    int notTake = 0 + fun(ind-1,W,wt,val);
-    int take = INT_MIN;
-    if(wt[ind] <= W)take = fun(ind-1,W-wt[ind],wt,val);
-    
-    return max(take,notTake);
-}
-int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
-{
-	return fun(n-1,maxWeight,weight,value);
+    int notTaken = 0 + fun(wt,val,ind-1,W);
+    int taken = INT_MIN;
+    if(wt[ind] <= W)taken = val[ind] + fun(wt,val,ind-1,W-wt[ind]);
+       
+    return  max(notTaken,taken);
 }
 
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) {
+    return fun(weight,value,n-1,maxWeight);
+} 
 
-APPROACH 2: TABULATION
+APPROACH 2: MEMOIZATION
 T.c -> o(n*w)
-s.c-> o(n*w) + o(n)
+s.c-> o(n*w) + o(n) ---> To omit  o(n) space we have to perform tabulation
 
 #include <bits/stdc++.h> 
 
@@ -45,6 +46,75 @@ int fun(vector<int>& wt, vector<int>& val, int ind, int W, vector<vector<int>>& 
 
 int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) 
 {
-	vector<vector<int>> dp(n,vector<int>(maxWeight+1,-1));
+    vector<vector<int>> dp(n,vector<int>(maxWeight+1,-1));
     return fun(weight,value,n-1,maxWeight,dp);
 }
+
+APPROACH 3: TABULATION
+T.c -> o(n*w)
+s.c-> o(n*w)
+
+#include<bits/stdc++.h>
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) {
+    vector<vector<int>>dp(n,vector<int>(maxWeight+1,0));
+    for(int i=weight[0];i<=maxWeight;i++)dp[0][i]=value[0];
+    
+    for(int i=1;i<n;i++){
+        for(int cap=0;cap<=maxWeight;cap++){
+            int notTaken = 0 + dp[i-1][cap];
+            int taken = INT_MIN;
+            if(weight[i] <= cap){
+                taken = value[i] + dp[i-1][cap-weight[i]];
+            }
+            dp[i][cap] = max(notTaken,taken);
+        }
+    }
+    return dp[n-1][maxWeight];
+} 
+
+APPROACH 4: SPACE OPTIMIZATION(using two rows concept i.e prev and curr)
+T.c -> o(n*w)
+s.c-> o(n*w) 
+
+
+#include<bits/stdc++.h>
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) {
+    vector<int>prev(maxWeight+1,0),curr(maxWeight+1,0);
+    for(int i=weight[0];i<=maxWeight;i++)prev[i]=value[0];
+    
+    for(int i=1;i<n;i++){
+        for(int cap=0;cap<=maxWeight;cap++){
+            int notTaken = 0 + prev[cap];
+            int taken = INT_MIN;
+            if(weight[i] <= cap){
+                taken = value[i] + prev[cap-weight[i]];
+            }
+            curr[cap] = max(notTaken,taken);
+        }
+        prev = curr;
+    }
+    return prev[maxWeight];
+} 
+
+
+APPROACH 5: SPACE OPTIMIZATION(using single rows concept i.e prev)
+T.c -> o(n*w)
+s.c-> o(w) 
+
+#include<bits/stdc++.h>
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) {
+    vector<int>prev(maxWeight+1,0);
+    for(int i=weight[0];i<=maxWeight;i++)prev[i]=value[0];
+    
+    for(int i=1;i<n;i++){
+        for(int cap=maxWeight;cap>=0;cap--){
+            int notTaken = 0 + prev[cap];
+            int taken = INT_MIN;
+            if(weight[i] <= cap){
+                taken = value[i] + prev[cap-weight[i]];
+            }
+            prev[cap] = max(notTaken,taken);
+        }
+    }
+    return prev[maxWeight];
+} 
