@@ -1,0 +1,113 @@
+Approach 1: Recurssion 
+T.C - > >> o(2^n) - - >  exponential
+S.C - >  >> o(n)  - -> Auxuliary stack space
+
+#include <bits/stdc++.h>
+
+int fun(int ind,vector<int> &num,int tar){
+    if(ind == 0){
+        if(tar%num[0] == 0)return tar/num[0];
+        else return 1e9;
+    }
+    int notTake = 0 + fun(ind-1,num,tar);
+    int take = 1e9;
+    if(num[ind] <= tar)take = 1 + fun(ind,num,tar-num[ind]);
+    return min(notTake,take);
+}
+
+int minimumElements(vector<int> &num, int x)
+{
+  int n = num.size();
+  int ans =  fun(n-1,num,x);  
+  //In question its clearly stated that if ans is beyond 1e9 return -1 else  return whatever the ans is
+  if(ans >= 1e9)return -1;
+  return ans;
+}
+
+
+Approach 2: Memoization 
+T.C - > o(n * t)
+S.C - > o(n * t) + o(t)  -> to reduce o(t) space use tabulation
+
+
+#include <bits/stdc++.h>
+
+int fun(int ind,vector<int> &num,int tar,vector<vector<int>> &dp){
+    if(ind == 0){
+        if(tar%num[0] == 0)return tar/num[0];
+        else return 1e9;
+    }
+    if(dp[ind][tar] != -1)return dp[ind][tar];
+    
+    int notTake = 0 + fun(ind-1,num,tar,dp);
+    int take = 1e9;
+    if(num[ind] <= tar)take = 1 + fun(ind,num,tar-num[ind],dp);
+    dp[ind][tar] = min(notTake,take);
+}
+
+int minimumElements(vector<int> &num, int x)
+{
+  int n = num.size();
+  vector<vector<int>>dp(n,vector<int>(x+1,-1));
+  int ans =  fun(n-1,num,x,dp);  
+  //In question its clearly stated that if ans is beyond 1e9 return -1 else  return whatever the ans is
+  if(ans >= 1e9)return -1;
+  return ans;
+}
+
+
+Approach 3:Tabulation 
+T.C - > o(n * t)
+S.C - > o(n * t) 
+
+#include <bits/stdc++.h> 
+int minimumElements(vector<int> &num, int x){
+  int n = num.size();
+  vector<vector<int>>dp(n,vector<int>(x+1,0));
+  for(int i=0;i<=x;i++){
+      if(i%num[0] == 0)dp[0][i] = i/num[0];
+      else dp[0][i] = 1e9;
+  }
+    
+   for(int i=1;i<n;i++){
+       for(int tar=0;tar<=x;tar++){
+           int notTake = 0 + dp[i-1][tar];
+           int take = 1e9;
+           if(num[i] <= tar)take = 1 + dp[i][tar-num[i]];
+           dp[i][tar] = min(notTake,take);
+       }
+   }
+     int ans =  dp[n-1][x];  
+     //In question its clearly stated that if ans is beyond 1e9 return -1 else return whatever the ans is
+     if(ans >= 1e9)return -1;
+     return ans;
+}
+
+
+Approach 4:  space optimization
+T.C - > o(n * t)
+S.C - > o(t)
+
+#include <bits/stdc++.h> 
+int minimumElements(vector<int> &num, int x){
+  int n = num.size();
+  vector<int>prev(x+1,0),curr(x+1,0);
+  for(int i=0;i<=x;i++){
+      if(i%num[0] == 0)prev[i] = i/num[0];
+      else prev[i] = 1e9;
+  }
+    
+   for(int i=1;i<n;i++){
+       for(int tar=0;tar<=x;tar++){
+           int notTake = 0 + prev[tar];
+           int take = 1e9;
+           if(num[i] <= tar)take = 1 + curr[tar-num[i]];
+           curr[tar] = min(notTake,take);
+       }
+       prev = curr;
+   }
+     int ans =  prev[x];  
+  //In question its clearly stated that if ans is beyond 1e9 return -1 else  return whatever the ans is
+     if(ans >= 1e9)return -1;
+     return ans;
+}
