@@ -1,0 +1,100 @@
+Approach 1 (recurssion)
+T.c -> Exponential
+S.c -> o(n)
+
+#include<bits/stdc++.h>
+using namespace std;
+
+int fun(int ind,int N,vector<int> &price){
+    if(ind == 0){
+        return (N * price[0]);
+    }
+    int notTake = 0 + fun(ind-1,N,price);
+    int take = INT_MIN;
+    int rodlength = ind+1;
+    if(rodlength <= N)take = price[ind] + fun(ind,N-rodlength,price);
+    
+    return max(take,notTake);
+}
+
+int cutRod(vector<int> &price, int n){
+    int size = price.size();
+    return fun(size-1,n,price);
+}
+
+Approach 2 (Memoization)
+T.c -> o(N*N)
+S.c -> o(N*N) + o(N)
+
+#include<bits/stdc++.h>
+using namespace std;
+
+int fun(int ind,int N,vector<int> &price, vector<vector<int>> &dp){
+    if(ind == 0){
+        return (N * price[0]);
+    }
+    
+    if(dp[ind][N] != -1)return dp[ind][N];
+    int notTake = 0 + fun(ind-1,N,price,dp);
+    int take = INT_MIN;
+    int rodlength = ind+1;
+    if(rodlength <= N)take = price[ind] + fun(ind,N-rodlength,price,dp);
+    
+    return dp[ind][N] = max(take,notTake);
+}
+
+int cutRod(vector<int> &price, int n){
+    int size = price.size();
+    vector<vector<int>>dp(size,vector<int>(size+1,-1));
+    return fun(size-1,n,price,dp);
+}
+
+Approach 3 (tabulation)
+T.c -> o(N*N)
+S.c -> o(N*N) 
+
+int cutRod(vector<int> &price, int n){
+    int size = price.size();
+    vector<vector<int>>dp(size,vector<int>(n+1,0));
+    //base case
+    for(int i=0;i<=size;i++){
+        dp[0][i] = i * price[0];
+    }
+    //changing parameters
+    for(int ind=1;ind<size;ind++){
+        for(int cap=0;cap<=n;cap++){
+            int notTake = 0 + dp[ind-1][cap];
+            int take = INT_MIN;
+            int rodlength = ind+1;
+            if(rodlength <= cap)take = price[ind] + dp[ind][cap-rodlength];
+            dp[ind][cap] = max(take,notTake);
+           }
+          }
+    return dp[size-1][n];
+    
+}
+
+Approach 4 (space optimization)
+T.c -> o(n*n)
+S.c -> o(n)
+
+
+int cutRod(vector<int> &price, int n){
+    int size = price.size();
+    vector<int>prev(n+1,0);
+    //base case
+    for(int i=0;i<=size;i++){
+       prev[i] = i * price[0];
+    }
+    //changing parameters
+    for(int ind=1;ind<size;ind++){
+        for(int cap=0;cap<=n;cap++){
+            int notTake = 0 +prev[cap];
+            int take = INT_MIN;
+            int rodlength = ind+1;
+            if(rodlength <= cap)take = price[ind] + prev[cap-rodlength];
+            prev[cap] = max(take,notTake);
+           }
+          }
+    return prev[n];  
+}
