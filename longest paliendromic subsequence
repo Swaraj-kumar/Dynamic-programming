@@ -1,0 +1,30 @@
+APPROACH ->  TABUALTION(follow longest common subsequence to solve this problem)
+
+#include <bits/stdc++.h> 
+
+int lcs(string s, string t){
+    int n = s.size();
+    int m = t.size();
+    //size of dp will be n+1 and m+1 as its taken 1 index lower
+    vector<vector<int>>dp(n+1,vector<int>(m+1,0));
+    //base case converting if(i == 0 || j == 0) int two for loops
+    for(int i=0;i<=n;i++)dp[i][0] = 0;
+    for(int j=0;j<=m;j++)dp[0][j] = 0;
+    //loop starts from index 1 ase 0 is done 
+    for(int ind1=1;ind1<=n;ind1++){
+        for(int ind2=1;ind2<=m;ind2++){
+             if(s[ind1-1] == t[ind2-1]) dp[ind1][ind2] = 1 + dp[ind1-1][ind2-1];
+ 
+             else dp[ind1][ind2] = 0 + max(dp[ind1-1][ind2],dp[ind1][ind2-1]);
+        }
+    }
+    return dp[n][m];
+}
+
+int longestPalindromeSubsequence(string s){
+    //reverse the given string s and then find the longest common subsequnce
+    //among both strings which does gives us the longest paliendromic string
+    string str = s;
+    reverse(str.begin(),str.end());
+    return lcs(s,str);
+}
