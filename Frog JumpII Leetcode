@@ -1,0 +1,75 @@
+// RECURSSION
+
+class Solution {
+public:
+    int fun(int ind,vector<int> &stones){
+    //base case
+    if(ind==0) return 0;
+    if(ind==1) return abs(stones[ind]-stones[ind-1]);
+        
+    int prevJump = fun(ind - 1,stones);
+    int currentJump = INT_MIN;
+    //To avoid the case of negative index
+    if(ind > 1){
+    currentJump = stones[ind] - stones[ind - 2];
+    }
+    //whatever will be the maximum of previous and current jump we return that lenght of jump
+    return max(prevJump, currentJump);
+    }
+    
+    int maxJump(vector<int>& stones) {
+        int n = stones.size();
+        return fun(n-1,stones);    
+    }
+};
+
+// MEMOIZATION
+
+class Solution {
+public:
+    int fun(int ind,vector<int> &stones,vector<int> &dp){
+    //base case
+    if(ind==0) return 0;
+    if(ind==1) return abs(stones[ind]-stones[ind-1]);
+    
+    if(dp[ind] != -1)return dp[ind];
+    
+    int prevJump = fun(ind - 1,stones,dp);
+    int currentJump = INT_MIN;
+    //To avoid the case of negative index
+    if(ind > 1){
+    currentJump = stones[ind] - stones[ind - 2];
+    }
+    //whatever will be the maximum of previous and current jump we return that lenght of jump
+    return dp[ind] = max(prevJump, currentJump);
+    }
+    
+    int maxJump(vector<int>& stones) {
+        int n = stones.size();
+        vector<int>dp(n+1,-1);
+        return fun(n-1,stones,dp);    
+    }
+};
+
+
+// TABULATION
+
+class Solution {
+public:
+    int maxJump(vector<int>& stones) {
+        int n = stones.size();
+        vector<int>dp(n+1,-1);
+        dp[0] = 0;
+        dp[1] = abs(stones[1] - stones[0]);
+        
+        for(int i=2;i<n;i++){
+            int prev = dp[i-1];
+            int curr = INT_MIN;
+            if(i > 1){
+            curr = stones[i]-stones[i-2];
+            }
+            dp[i] = max(prev,curr);
+        }
+        return dp[n-1];
+    }
+};
