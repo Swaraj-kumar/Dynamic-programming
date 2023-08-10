@@ -1,20 +1,22 @@
 Approach 1: Recurssive
 
+#include<bits/stdc++.h>
+
 int fun(int day,int last,vector<vector<int>> &points)
 {
+    int maxi = INT_MIN;
     if(day == 0){
-        int maxi = 0;
-        for(int task=0;task<=2;task++){
-            if(task != last){
-            maxi = max(maxi,points[0][task]);
+        for(int i=0;i<=2;i++){
+            if(i != last){
+            maxi = max(maxi,points[0][i]);
         }
         }
          return maxi;
     }
-    int maxi = 0;
-    for(int task=0;task<=2;task++){
-        if(task != last){
-            int point = points[day][task] + fun(day-1,task,points);
+    maxi = INT_MIN;
+    for(int i=0;i<=2;i++){
+        if(i != last){
+            int point = points[day][i] + fun(day-1,i,points);
             maxi = max(maxi,point);
         }
     }
@@ -22,41 +24,44 @@ int fun(int day,int last,vector<vector<int>> &points)
 }
 
 int ninjaTraining(int n, vector<vector<int>> &points)
-{
+{          //DAy last points
     return fun(n-1,3,points);
 }
 
-Approach 2: Tabulation
+Approach 2: MEMOIZATION
 T.C-> O(N*4*3)
 S.c-> O(N) + O(N*4)
 
 
-int fun(int day,int last,vector<vector<int>> &points,vector<vector<int>> &dp)
+#include<bits/stdc++.h>
+
+int fun(int day,int last,vector<vector<int>> &points, vector<vector<int>> &dp)
 {
+    int maxi = INT_MIN;
     if(day == 0){
-        int maxi = 0;
-        for(int task=0;task<=2;task++){
-            if(task != last){
-            maxi = max(maxi,points[0][task]);
+        for(int i=0;i<=2;i++){
+            if(i != last){
+            maxi = max(maxi,points[0][i]);
+            }
         }
-        }
-         return maxi;
+      return dp[day][last] = maxi;
     }
+    
     if(dp[day][last] != -1)return dp[day][last];
     
-    int maxi = 0;
-    for(int task=0;task<=2;task++){
-        if(task != last){
-            int point = points[day][task] + fun(day-1,task,points,dp);
+    maxi = INT_MIN;
+    for(int i=0;i<=2;i++){
+        if(i != last){
+            int point = points[day][i] + fun(day-1,i,points,dp);
             maxi = max(maxi,point);
         }
     }
-    return dp[day][last]=maxi;
+    return dp[day][last] = maxi;
 }
 
 int ninjaTraining(int n, vector<vector<int>> &points)
-{
-    vector<vector<int>> dp(n, vector<int>(4,-1));
+{          //DAy last points
+    vector<vector<int>> dp(n,vector<int>(4,-1));
     return fun(n-1,3,points,dp);
 }
 
