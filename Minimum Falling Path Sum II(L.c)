@@ -1,0 +1,44 @@
+https://leetcode.com/problems/minimum-falling-path-sum-ii/
+
+
+// This question is similar to training ninja problem of striver DP series
+
+class Solution {    
+    int fun(int day,int col, int last, vector<vector<int>>&grid,vector<vector<int>>&dp){
+        //if we are at first row then we have multi options to select select minimum of it
+        //such that its not equal to previously selected index
+        if(day == 0){
+            int mini = INT_MAX;
+            for(int task = 0; task <col; task++){
+                if(task != last){
+                    mini = min(mini,grid[0][task]);
+                }
+            }
+            return dp[day][last] = mini;
+        }
+        if(dp[day][last] != -1) return dp[day][last];
+        
+        int mini = INT_MAX; 
+        for(int task = 0; task<col; task++){
+            if(task != last){
+                int point = grid[day][task] + fun(day-1,col,task,grid,dp);
+                mini = min(mini,point);
+            }
+        }
+        return dp[day][last] = mini;
+    }
+    
+public:
+    int minFallingPathSum(vector<vector<int>>& grid){
+        int n = grid.size();
+        int m = grid[0].size();
+        int ans = INT_MAX;
+    
+        vector<vector<int>> dp(n,vector<int>(m+1,-1));
+        // we have variable column as row is fixed to be last row
+        for(int i = 0; i<n; i++){
+            ans = (ans,fun(n-1,m,m,grid,dp));
+       }        
+        return ans;
+    }
+};
