@@ -1,0 +1,113 @@
+Approach 1-> Recurssion
+T.c and s.c for this is similar to the unique paths refer that...
+
+class Solution {
+public: 
+    int fun(int i,int j,vector<vector<int>>& mat){
+    if(i >= 0 && j >= 0 && mat[i][j] == 1)return 0;
+    if(i==0 && j==0)return 1;
+    if(i < 0 || j < 0)return 0;
+        
+    int up = fun(i-1,j,mat);
+    int left = fun(i,j-1,mat);
+    
+    return up + left;
+    }
+    
+    int uniquePathsWithObstacles(vector<vector<int>>& mat) {
+    int n = mat.size();
+    int m = mat[0].size();
+        
+    return fun(n-1,m-1,mat);
+    }
+};
+
+
+Approach 2-> Memoization
+T.c and s.c for this is similar to the unique paths refer that...
+
+
+class Solution {
+public: 
+    int fun(int i,int j,vector<vector<int>>& mat,vector<vector<int>> &dp){
+    if(i >= 0 && j >= 0 && mat[i][j] == 1)return 0;
+    if(i==0 && j==0)return 1;
+    if(i < 0 || j < 0)return 0;
+     
+    if(dp[i][j] != -1)return dp[i][j];
+        
+    int up = fun(i-1,j,mat,dp);
+    int left = fun(i,j-1,mat,dp);
+    
+    return dp[i][j] = up + left;
+    }
+    
+    int uniquePathsWithObstacles(vector<vector<int>>& mat) {
+    int n = mat.size();
+    int m = mat[0].size();
+    vector<vector<int>>dp(n,vector<int>(m,-1));
+        
+    return fun(n-1,m-1,mat,dp);
+    }
+};
+
+
+Approach 3-> Tabulation
+T.c and s.c for this is similar to the unique paths refer that...
+
+class Solution {
+public:
+int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+    //if starting pos of grid tends to be 1 then return 0 because there will be no path
+    if(obstacleGrid[0][0] == 1) return 0;
+    int row = obstacleGrid.size();
+    int col = obstacleGrid[0].size();
+    vector<vector<int>> dp(row, vector<int> (col, -1));
+    
+    for(int i = 0; i < row; i++) {
+        for(int j = 0; j < col; j++) {
+            if(i == 0 && j == 0) dp[i][j] = 1;
+            //if any grid is found to be 1 then return 0 as there will be no path
+            else if(obstacleGrid[i][j] == 1) dp[i][j] = 0;
+            else {
+                int left = 0, up = 0;
+                if(i > 0) up = dp[i - 1][j];
+                if(j > 0) left = dp[i][j - 1];
+                dp[i][j] = left + up;
+            }
+        }
+    }
+    return dp[row - 1][col - 1];
+}
+};
+
+Approach 4-> Space optimization
+T.c and s.c for this is similar to the unique paths refer that...
+
+class Solution {
+public:
+int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+    //if starting pos of grid tends to be 1 then return 0 because there will be no path
+    if(obstacleGrid[0][0] == 1) return 0;
+    int m = obstacleGrid.size();
+    int n = obstacleGrid[0].size();
+    vector<int>prev(n,0);
+    
+    for(int i = 0; i < m; i++) {
+        vector<int>curr(n,0);
+        for(int j = 0; j < n; j++) {
+            if(i == 0 && j == 0) curr[j] = 1;
+            //if any grid is found to be 1 then return 0 as there will be no path
+            else if(obstacleGrid[i][j] == 1) curr[j] = 0;
+            else {
+                int left = 0, up = 0;
+                if(i > 0) up = prev[j];
+                if(j > 0) left = curr[j - 1];
+                curr[j] = left + up;
+            }
+        }
+        prev = curr;
+    }
+    return prev[n - 1];
+}
+};
